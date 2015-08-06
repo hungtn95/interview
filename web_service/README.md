@@ -12,7 +12,7 @@ This little guide should enable you to get cracking.
 ### Notes ###
 * To run the build type (on unix) `./gradlew clean build` or (on windows) `gradlew.bat clean build`
 * This application requires Java 8
-* You can also run the app using `.gradlew run`
+* You can also run the app using `./gradlew run`
 * Use the appropriate gradle tasks to generate the project files for your IDE of choice.
 https://docs.gradle.org/current/userguide/idea_plugin.html
 or
