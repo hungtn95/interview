@@ -30,7 +30,7 @@ targetCompatibility = 1.8
 mainClassName = 'com.payit.ApplicationMain'
 
 run {
-    args = ['server', '../app.yml']
+    args = ['server', './app.yml']
 }
 
 jar {
