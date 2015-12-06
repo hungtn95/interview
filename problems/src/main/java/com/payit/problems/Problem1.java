@@ -15,7 +15,15 @@ public class Problem1 {
 
 
     public List<String> fizzBuzz(List<String> fizBuzz){
-
+    	for (int i = 0; i < fizBuzz.size(); i++) {
+    		if (i % 15 == 0) {
+    			fizBuzz.set(i, "FizzBuzz");
+    		} else if (i % 3 == 0) {
+    			fizBuzz.set(i, "Fizz");
+    		} else if (i % 5 == 0) {
+    			fizBuzz.set(i, "Buzz");
+    		}
+    	}
         return fizBuzz;
     }
 
