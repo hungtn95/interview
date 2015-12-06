@@ -21,6 +21,7 @@ body {
     border-bottom: solid 1px grey;
 }
 .low-temp {
+    font-size: 13px;
     font-weight: 300;
     font-style: italic;
     color: #666666;
