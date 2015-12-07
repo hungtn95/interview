@@ -4,9 +4,12 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.payit.ApplicationMain;
 import com.payit.ServiceInjector;
+import com.payit.api.BlogComment;
 import com.payit.api.BlogPost;
+
 import io.dropwizard.Configuration;
 import io.dropwizard.testing.junit.DropwizardAppRule;
+
 import org.junit.*;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +18,7 @@ import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static com.payit.fixture.GenerateObjects.generateBlogPost;
+import static com.payit.fixture.GenerateObjects.generateBlogComment;
 import static io.dropwizard.testing.ResourceHelpers.resourceFilePath;
 
 public class BlogStoreTest {
@@ -32,8 +36,10 @@ public class BlogStoreTest {
     @After
     public void tearDown(){
         blogStore.getAllPosts().stream().forEach(blog -> blogStore.deleteBlogPost(blog.getId()));
+        blogStore.getAllComments().stream().forEach(blog -> blogStore.deleteBlogComment(blog.getId()));
     }
 
+    // Test Blog post feature
     @Test
     public void storeBlogPostTest(){
         BlogPost post = generateBlogPost();
@@ -62,17 +68,16 @@ public class BlogStoreTest {
         BlogPost post = generateBlogPost();
         blogStore.storeBlogPost(post);
 
-        String newTitle = UUID.randomUUID().toString();
+        String newTitle = UUID.randomUUID().toString();       
         post.setTitle(newTitle);
-
+        
         blogStore.updateBlogPost(post.getId(), post);
 
         BlogPost updatedPost = blogStore.getBlogPostById(post.getId());
         Assert.assertEquals(newTitle, updatedPost.getTitle());
-
     }
 
-    @Test
+	@Test
     public void getAllPostsTest(){
         int expectedSize = 100;
 
@@ -87,5 +92,77 @@ public class BlogStoreTest {
 
     }
 
+    // Test Blog comment feature
+    @Test
+    public void storeBlogCommentTest(){
+        BlogPost post = generateBlogPost();
+        blogStore.storeBlogPost(post);
+        BlogComment comment = generateBlogComment(post.getId());
+        blogStore.storeBlogComment(comment);
+        BlogComment storedComment = blogStore.getBlogCommentById(comment.getId());
+        Assert.assertNotNull(storedComment);
+    }
 
+    @Test
+    public void getBlogCommentByIdTest(){
+        BlogPost post = generateBlogPost();
+        blogStore.storeBlogPost(post);
+        BlogComment comment = generateBlogComment(post.getId());
+        blogStore.storeBlogComment(comment);
+        
+        BlogComment storedComment = blogStore.getBlogCommentById(comment.getId());
+        Assert.assertNotNull(storedComment);
+    }
+
+    @Test
+    public void getBlogCommentByIdNotFoundTest(){
+        BlogPost notFoundPost = blogStore.getBlogPostById(UUID.randomUUID().toString());
+        Assert.assertNull(notFoundPost);
+    }
+
+    @Test
+    public void updateBlogCommentTest() throws IllegalAccessException, InvocationTargetException {
+        BlogPost post = generateBlogPost();
+        blogStore.storeBlogPost(post);
+        BlogComment comment = generateBlogComment(post.getId());
+        blogStore.storeBlogComment(comment);
+        String newText = UUID.randomUUID().toString();    
+        
+        comment.setCommentText(newText);
+        blogStore.updateBlogComment(comment.getId(), comment);
+        BlogComment updatedComment = blogStore.getBlogCommentById(comment.getId());
+        Assert.assertEquals(newText, updatedComment.getCommentText());
+    }
+
+	@Test
+    public void getAllCommentsTest(){
+        int expectedSize = 100;
+
+        IntStream.range(0, expectedSize).parallel().forEach(item -> {
+            BlogPost post = generateBlogPost();
+            blogStore.storeBlogPost(post);
+            BlogComment comment = generateBlogComment(post.getId());
+            blogStore.storeBlogComment(comment);
+        });
+
+        List<BlogComment> allBlogComments = blogStore.getAllComments();
+
+        Assert.assertEquals(expectedSize, allBlogComments.size());
+
+    }
+	@Test
+    public void getAllCommentsByPostIdTest(){
+        int expectedSize = 100;
+        BlogPost post = generateBlogPost();
+        blogStore.storeBlogPost(post);
+        IntStream.range(0, expectedSize).parallel().forEach(item -> {
+            BlogComment comment = generateBlogComment(post.getId());
+            blogStore.storeBlogComment(comment);
+        });
+
+        List<BlogComment> allBlogCommentsByPostId = blogStore.getAllCommentsByPostId(post.getId());
+
+        Assert.assertEquals(expectedSize, allBlogCommentsByPostId.size());
+
+    }
 }

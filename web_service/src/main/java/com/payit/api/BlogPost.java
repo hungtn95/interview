@@ -50,4 +50,5 @@ public class BlogPost {
     public void setPostDate(Date postDate) {
         this.postDate = postDate;
     }
+    
 }
